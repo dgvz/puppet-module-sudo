@@ -1,0 +1,15 @@
+###
+### sudo
+###
+### $Id$
+### $URL$
+
+Overview
+========
+
+Manages /etc/sudoers entries.
+
+TODO
+====
+
+Almost everything.
