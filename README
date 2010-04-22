@@ -39,16 +39,19 @@ Adds an entry to /etc/sudoers. The namevar is not significant.
 The following parameters are available:
 
   user
-    Who is allowed to run the command. Must be a username, #UID, or user alias.
+    Who is allowed to run the command. Must be a username, #UID, user alias, or
+    the keyword "ALL".
   command
     The command to which access is being granted. Must be a fully qualified
-    path to a binary, the keyword "sudoedit", or command alias.
+    path to a binary, command alias, the keyword "sudoedit", or the keyword
+    "ALL".
   host
     The server on which the command may be run. Must be a hostname, IP address,
-    CIDR-style IP range, or host alias. Defaults to $hostname.
+    CIDR-style IP range, host alias, or the keyword "ALL". Defaults to
+    $hostname.
   runas
-    The user that the command may be run as. Must be a username, #UID, or user
-    alias. Defaults to "root".
+    The user that the command may be run as. Must be a username, #UID, user
+    alias, or the keyword "ALL". Defaults to "root".
   passwd
   exec
   setenv
