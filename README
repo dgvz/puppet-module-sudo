@@ -7,9 +7,94 @@
 Overview
 ========
 
-Manages /etc/sudoers entries.
+Manages /etc/sudoers.
+
+
+Usage
+=====
+
+This document should be read in conjunction with the sudoers(5) manpage.
+
+sudo
+----
+
+    include sudo
+
+Installs the Sudo package. This also disables the "requiretty" option, so that
+Sudo can be used by Cron or NRPE.
+
+This class is automatically included by the types listed below.
+
+sudo::entry
+-----------
+
+    sudo::entry { "Let alice run /sbin/foo without password":
+        user    => "alice",
+        command => "/sbin/foo",
+        passwd  => false;
+    }
+
+Adds an entry to /etc/sudoers. The namevar is not significant.
+
+The following parameters are available:
+
+  user
+    Who is allowed to run the command. Must be a username, #UID, or user alias.
+  command
+    The command to which access is being granted. Must be a fully qualified
+    path to a binary, the keyword "sudoedit", or command alias.
+  host
+    The server on which the command may be run. Must be a hostname, IP address,
+    CIDR-style IP range, or host alias. Defaults to $hostname.
+  runas
+    The user that the command may be run as. Must be a username, #UID, or user
+    alias. Defaults to "root".
+  passwd
+  exec
+  setenv
+    If "true", sets the PASSWD/EXEC/SETENV tags respectively.
+    If "false", sets the NOPASSWD/NOEXEC/NOSETENV tags respectively.
+
+sudo::alias::user
+sudo::alias::runas
+sudo::alias::host
+sudo::alias::command
+--------------------
+
+    sudo::alias::user { foo:
+        key  => "ADMINS",
+        user => "bob";
+    }
+
+    sudo::alias::runas { foo:
+        key  => "ADMINS",
+        user => "carol";
+    }
+
+    sudo::alias::host { foo:
+        key  => "CLUSTERHOSTS",
+        host => "server42";
+    }
+
+    sudo::alias::command { foo:
+        key     => "DAEMONS",
+        command => "/sbin/service daemon restart";
+    }
+
+Sets up a user/runas/host/command alias respectively.
+
+The following parameters are available:
+
+  ensure
+    Either "present" or "absent". Defaults to "present".
+  key
+    The name of the alias. Must be all-caps.
+  user/host/command
+    The item to add to the alias's list.
+
 
 TODO
 ====
 
-Almost everything.
+- Work out how to safely implement "ensure => absent" on sudo::entry.
+- Manage Defaults lines.

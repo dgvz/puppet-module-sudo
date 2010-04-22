@@ -1,10 +1,10 @@
-class sudo::build inherits sudo::base {
+class sudo::build inherits sudo {
 }
 
 class sudo::monitor {
 }
 
-class sudo::secure inherits sudo::base {
+class sudo::secure inherits sudo {
 }
 
 class sudo::complete inherits sudo::secure {
