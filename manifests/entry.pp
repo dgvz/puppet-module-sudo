@@ -14,7 +14,7 @@ define sudo::entry::tag_($base, $tagname, $value) {
 		augeas { $name:
 			context => "/files/etc/sudoers",
 			changes => "rm ${base}/tag[.='${tagname}' or .='NO${tagname}']",
-			onlyif  => "match ${base}/tag[.='${tagname}' or .='NO${tagname}'] size > 0";
+			onlyif  => "match ${base}/tag[.='${tagname}' or .='NO${tagname}'] size != 0";
 		}
 	}
 }
