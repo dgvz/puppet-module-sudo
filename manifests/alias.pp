@@ -34,7 +34,7 @@ define sudo::alias_($ensure = present,
 					"rm ${directive}[alias/name='${key}']/alias/${type}[.='${item}']",
 					"rm ${directive}[alias/name='${key}'][count(alias/${type})=0]",
 				],
-				onlyif  => "match ${directive}[alias/name='${key}']/alias/${type}[.='${item}'] size != 0";
+				onlyif  => "match ${directive}[alias/name='${key}']/alias/${type}[.='${item}'] size > 0";
 			}
 		}
 	}

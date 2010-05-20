@@ -12,6 +12,6 @@ class sudo {
 			"rm Defaults/requiretty",
 			"rm Defaults[count(*) = 0]",
 		],
-		onlyif => "match Defaults/requiretty size != 0";
+		onlyif => "match Defaults/requiretty size > 0";
 	}
 }
