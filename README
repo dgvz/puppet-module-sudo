@@ -53,6 +53,8 @@ The following parameters are available:
     The user that the command may be run as. Must be a username, #UID,
     %groupname, user alias, or the keyword "ALL". Defaults to "root".
   passwd
+    Set to false if you want to skip authentication.  sudo will normally 
+    prompt for the user's password before escalating privileges.
   exec
   setenv
     If "true", sets the PASSWD/EXEC/SETENV tags respectively.
