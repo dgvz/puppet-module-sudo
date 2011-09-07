@@ -1,5 +1,3 @@
-import "*"
-
 class sudo {
 	package { "sudo": ensure => present }
 
