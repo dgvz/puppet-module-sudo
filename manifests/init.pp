@@ -3,7 +3,8 @@ class sudo {
 
 	# NRPE checks don't have a tty
 	augeas { "sudo/requiretty":
-		context => "/files/etc/sudoers",
+		incl    => "/etc/sudoers",
+		lens    => "Sudoers.lns",
 		changes => [
 			"ins #comment before Defaults[requiretty]",
 			"set #comment[following-sibling::Defaults/requiretty][last()] 'Defaults requiretty'",

@@ -16,7 +16,8 @@ define sudo::entry($ensure   = present,
 		case $ensure {
 			present: {
 				augeas { $name:
-					context => "/files/etc/sudoers",
+					incl    => "/etc/sudoers",
+					lens    => "Sudoers.lns",
 					changes => [
 						"set spec[last()+1]/user ${user}",
 						"set spec[last()]/host_group/host ${host}",

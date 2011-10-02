@@ -16,10 +16,14 @@ define sudo::alias_($ensure = present,
 		}
 	}
 
+	Augeas {
+		incl => "/etc/sudoers",
+		lens => "Sudoers.lns",
+	}
+
 	case $ensure {
 		present: {
 			augeas { "sudo/alias/${type}/${key}/${item}":
-				context => "/files/etc/sudoers",
 				changes => [
 					"set ${directive}[alias/name='${key}']/alias/name ${key}",
 					"set ${directive}[alias/name='${key}']/alias/${type}[last()+1] '${item}'",
@@ -29,7 +33,6 @@ define sudo::alias_($ensure = present,
 		}
 		absent: {
 			augeas { "sudo/alias/${type}/${key}/${item}":
-				context => "/files/etc/sudoers",
 				changes => [
 					"rm ${directive}[alias/name='${key}']/alias/${type}[.='${item}']",
 					"rm ${directive}[alias/name='${key}'][count(alias/${type})=0]",
