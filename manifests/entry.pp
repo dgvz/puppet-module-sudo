@@ -15,7 +15,7 @@ define sudo::entry($ensure   = present,
 
 		case $ensure {
 			present: {
-				augeas { $name:
+				augeas { "sudo/entry/${name}":
 					incl    => "/etc/sudoers",
 					lens    => "Sudoers.lns",
 					changes => [
@@ -36,7 +36,12 @@ define sudo::entry($ensure   = present,
 				sudo::entry::tag_ { "${name}/setenv": tagname => "SETENV", value => $setenv }
 			}
 			absent: {
-				fail("ensure '${ensure}' not implemented")
+				augeas { "sudo/entry/${name}":
+					incl    => "/etc/sudoers",
+					lens    => "Sudoers.lns",
+					changes => "rm *[user='${user}'][host_group/host='${host}'][host_group/command='${command}'][host_group/command/runas_user='${runas}']",
+					onlyif  => "match *[user='${user}'][host_group/host='${host}'][host_group/command='${command}'][host_group/command/runas_user='${runas}'] size > 0",
+				}
 			}
 		}
 	}
