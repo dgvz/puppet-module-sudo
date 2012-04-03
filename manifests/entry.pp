@@ -29,7 +29,7 @@ define sudo::entry($ensure   = present,
 
 				Sudo::Entry::Tag_ {
 					base    => $base,
-					require => Augeas[$name],
+					require => Augeas["sudo/entry/${name}"],
 				}
 				sudo::entry::tag_ { "${name}/passwd": tagname => "PASSWD", value => $passwd }
 				sudo::entry::tag_ { "${name}/exec":   tagname => "EXEC",   value => $exec   }
