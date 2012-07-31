@@ -1,4 +1,6 @@
-define sudo::entry::tag_($base, $tagname, $value) {
+define sudo::entry::tag_($base,
+                         $tagname,
+                         $value   = undef) {
 	case $value {
 		yes,true,1: { $tag_ = $tagname       }
 		no,false,0: { $tag_ = "NO${tagname}" }
