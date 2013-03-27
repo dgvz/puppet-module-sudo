@@ -23,9 +23,9 @@ class sudo {
 					incl    => "/etc/sudoers",
 					lens    => "Sudoers.lns",
 					changes => [
-						"set Defaults/secure_path \"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"",
+						"set Defaults/secure_path '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'",
 					],
-					onlyif  => "match Defaults/secure_path \"/sbin:/bin:/usr/sbin:/usr/bin\"",
+					onlyif  => "match Defaults[secure_path='/sbin:/bin:/usr/sbin:/usr/bin']",
 				}
 			}
 		}
