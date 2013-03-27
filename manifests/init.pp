@@ -25,7 +25,7 @@ class sudo {
 					changes => [
 						"set Defaults/secure_path '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'",
 					],
-					onlyif  => "match Defaults[secure_path='/sbin:/bin:/usr/sbin:/usr/bin']",
+					onlyif  => "match Defaults[secure_path='/sbin:/bin:/usr/sbin:/usr/bin'] size > 0",
 				}
 			}
 		}
