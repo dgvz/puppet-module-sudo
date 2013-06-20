@@ -13,10 +13,6 @@ define sudo::entry($ensure   = present,
 	if $user == "root" {
 		warning("Refusing to add Sudo entry for '${user}'")
 	} else {
-
-# TESTING!!!
-if $::fqdn == "loot.engineroom.anchor.net.au" {
-
 		$base_filter  = "[user='${user}'][host_group[host='${host}'][command[.='${command}'][runas_user='${runas}']]]"
 		$base_changes = [ "rm spec${base_filter}" ]
 
@@ -104,9 +100,5 @@ if $::fqdn == "loot.engineroom.anchor.net.au" {
 				}
 			}
 		}
-
-# TESTING!!!
-}
-
 	}
 }
