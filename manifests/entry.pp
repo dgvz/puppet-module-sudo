@@ -1,6 +1,6 @@
 define sudo::entry($ensure   = present,
                    $user,
-                   $host     = $hostname,
+                   $host     = $::hostname,
                    $command,
                    $runas    = "root",
                    $passwd   = undef,
@@ -8,41 +8,105 @@ define sudo::entry($ensure   = present,
                    $setenv   = undef) {
 	include sudo::base
 
+	Augeas { require => Noop["sudo/installed"] }
+
 	if $user == "root" {
 		warning("Refusing to add Sudo entry for '${user}'")
 	} else {
-		$base = "spec[user='${user}']/host_group[host='${host}']/command[.='${command}'][runas_user='${runas}']"
+
+# TESTING!!!
+if $::fqdn == "loot.engineroom.anchor.net.au" {
+
+		$base_filter  = "[user='${user}'][host_group[host='${host}'][command[.='${command}'][runas_user='${runas}']]]"
+		$base_changes = [ "rm spec${base_filter}" ]
 
 		case $ensure {
 			present: {
+				$init_changes = [
+					"clear spec[#new]/#new",
+					"set spec[#new]/user '${user}'",
+					"set spec[#new]/host_group/host '${host}'",
+					"set spec[#new]/host_group/command '${command}'",
+					"set spec[#new]/host_group/command/runas_user '${runas}'",
+				]
+
+				case $passwd {
+					true: {
+						$passwd_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'PASSWD'" ]
+						$passwd_filter  = "[host_group/command/tag[.='PASSWD']]"
+					}
+					false: {
+						$passwd_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'NOPASSWD'" ]
+						$passwd_filter  = "[host_group/command/tag[.='NOPASSWD']]"
+					}
+					undef: {
+						$passwd_changes = []
+						$passwd_filter  = ""
+					}
+					default: {
+						fail("Invalid value for passwd: ${passwd}")
+					}
+				}
+				case $exec {
+					true: {
+						$exec_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'EXEC'" ]
+						$exec_filter  = "[host_group/command/tag[.='EXEC']]"
+					}
+					false: {
+						$exec_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'NOEXEC'" ]
+						$exec_filter  = "[host_group/command/tag[.='NOEXEC']]"
+					}
+					undef: {
+						$exec_changes = []
+						$exec_filter  = ""
+					}
+					default: {
+						fail("Invalid value for exec: ${exec}")
+					}
+				}
+				case $setenv {
+					true: {
+						$setenv_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'SETENV'" ]
+						$setenv_filter  = "[host_group/command/tag[.='SETENV']]"
+					}
+					false: {
+						$setenv_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'NOSETENV'" ]
+						$setenv_filter  = "[host_group/command/tag[.='NOSETENV']]"
+					}
+					undef: {
+						$setenv_changes = []
+						$setenv_filter  = ""
+					}
+					default: {
+						fail("Invalid value for setenv: ${setenv}")
+					}
+				}
+				$fini_changes = [
+					"rm spec[#new]/#new",
+				]
+
+				$changes = sum($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
+				$filter  = sum($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
+
 				augeas { "sudo/entry/${name}":
 					incl    => "/etc/sudoers",
 					lens    => "Sudoers.lns",
-					changes => [
-						"set spec[last()+1]/user ${user}",
-						"set spec[last()]/host_group/host ${host}",
-						"set spec[last()]/host_group/command '${command}'",
-						"set spec[last()]/host_group/command/runas_user ${runas}",
-					],
-					onlyif  => "match ${base} size == 0";
+					changes => $changes,
+					onlyif  => "match spec${filter} size == 0";
 				}
-
-				Sudo::Entry::Tag_ {
-					base    => $base,
-					require => Augeas["sudo/entry/${name}"],
-				}
-				sudo::entry::tag_ { "${name}/passwd": tagname => "PASSWD", value => $passwd }
-				sudo::entry::tag_ { "${name}/exec":   tagname => "EXEC",   value => $exec   }
-				sudo::entry::tag_ { "${name}/setenv": tagname => "SETENV", value => $setenv }
 			}
 			absent: {
 				augeas { "sudo/entry/${name}":
 					incl    => "/etc/sudoers",
 					lens    => "Sudoers.lns",
-					changes => "rm *[user='${user}'][host_group/host='${host}'][host_group/command='${command}'][host_group/command/runas_user='${runas}']",
-					onlyif  => "match *[user='${user}'][host_group/host='${host}'][host_group/command='${command}'][host_group/command/runas_user='${runas}'] size > 0",
+					changes => $base_changes,
+					onlyif  => "match spec${base_filter} size > 0",
 				}
 			}
 		}
+
+# TESTING!!!
+}
+
 	}
 }
