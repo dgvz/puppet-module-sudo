@@ -6,7 +6,7 @@ define sudo::entry($ensure   = present,
                    $passwd   = undef,
                    $exec     = undef,
                    $setenv   = undef) {
-	include sudo
+	include sudo::base
 
 	if $user == "root" {
 		warning("Refusing to add Sudo entry for '${user}'")

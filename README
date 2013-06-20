@@ -13,16 +13,6 @@ Usage
 
 This document should be read in conjunction with the sudoers(5) manpage.
 
-sudo
-----
-
-    include sudo
-
-Installs the Sudo package. This also disables the "requiretty" option, so that
-Sudo can be used by Cron or NRPE.
-
-This class is automatically included by the types listed below.
-
 sudo::entry
 -----------
 

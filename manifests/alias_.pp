@@ -1,6 +1,6 @@
 define sudo::alias_($ensure = present,
                     $type, $key, $item) {
-	include sudo
+	include sudo::base
 
 	if $key !~ /^[A-Z][A-Z0-9_]*$/ {
 		fail("Invalid key: ${key}")
