@@ -81,8 +81,8 @@ define sudo::entry($ensure   = present,
 					"rm spec[#new]/#new",
 				]
 
-				$changes = sum($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
-				$filter  = sum($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
+				$changes = concat($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
+				$filter  = concat($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
 
 				augeas { "sudo/entry/${name}":
 					incl    => "/etc/sudoers",
