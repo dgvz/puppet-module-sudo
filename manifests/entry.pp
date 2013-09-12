@@ -1,19 +1,12 @@
 define sudo::entry($ensure   = present,
                    $user,
-                   $host     = undef,
+                   $host     = "ALL",
                    $command,
                    $runas    = "root",
                    $passwd   = undef,
                    $exec     = undef,
                    $setenv   = undef) {
 	include sudo::base
-
-	# TEMPORARY -- for testing migration below
-	if $::hostname == "loot" {
-		$host_ = coalesce($host, "ALL")
-	} else {
-		$host_ = coalesce($host, $::hostname)
-	}
 
 	Augeas {
 		incl    => "/etc/sudoers",
@@ -24,7 +17,7 @@ define sudo::entry($ensure   = present,
 	if $user == "root" {
 		warning("Refusing to add Sudo entry for '${user}'")
 	} else {
-		$base_filter  = "[user='${user}'][host_group[host='${host_}'][command[.='${command}'][runas_user='${runas}']]]"
+		$base_filter  = "[user='${user}'][host_group[host='${host}'][command[.='${command}'][runas_user='${runas}']]]"
 		$base_changes = [ "rm spec${base_filter}" ]
 
 		case $ensure {
@@ -32,13 +25,13 @@ define sudo::entry($ensure   = present,
 				$init_changes = [
 					"clear spec[#new]/#new",
 					"set spec[#new]/user '${user}'",
-					"set spec[#new]/host_group/host '${host_}'",
+					"set spec[#new]/host_group/host '${host}'",
 					"set spec[#new]/host_group/command '${command}'",
 					"set spec[#new]/host_group/command/runas_user '${runas}'",
 				]
 
 				# TEMPORARY -- migrate host=$::hostname to host=ALL
-				if $host_ == "ALL" {
+				if $host == "ALL" {
 					$fixup_changes = [ "rm spec[user='${user}'][host_group[host='${::hostname}'][command[.='${command}'][runas_user='${runas}']]]" ]
 				} else {
 					$fixup_changes = []
