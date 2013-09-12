@@ -36,7 +36,7 @@ The following parameters are available:
   host
     The server on which the command may be run. Must be a hostname, IP address,
     CIDR-style IP range, host alias, or the keyword "ALL". Defaults to
-    $hostname.
+    "ALL".
   runas
     The user that the command may be run as. Must be a username, #UID,
     %groupname, user alias, or the keyword "ALL". Defaults to "root".

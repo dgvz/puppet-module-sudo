@@ -1,6 +1,6 @@
 define sudo::entry($ensure   = present,
                    $user,
-                   $host     = $::hostname,
+                   $host     = undef,
                    $command,
                    $runas    = "root",
                    $passwd   = undef,
@@ -8,12 +8,23 @@ define sudo::entry($ensure   = present,
                    $setenv   = undef) {
 	include sudo::base
 
-	Augeas { require => Noop["sudo/installed"] }
+	# TEMPORARY -- for testing migration below
+	if $::hostname == "loot" {
+		$host_ = coalesce($host, "ALL")
+	} else {
+		$host_ = coalesce($host, $::hostname)
+	}
+
+	Augeas {
+		incl    => "/etc/sudoers",
+		lens    => "Sudoers.lns",
+		require => Noop["sudo/installed"],
+	}
 
 	if $user == "root" {
 		warning("Refusing to add Sudo entry for '${user}'")
 	} else {
-		$base_filter  = "[user='${user}'][host_group[host='${host}'][command[.='${command}'][runas_user='${runas}']]]"
+		$base_filter  = "[user='${user}'][host_group[host='${host_}'][command[.='${command}'][runas_user='${runas}']]]"
 		$base_changes = [ "rm spec${base_filter}" ]
 
 		case $ensure {
@@ -21,10 +32,17 @@ define sudo::entry($ensure   = present,
 				$init_changes = [
 					"clear spec[#new]/#new",
 					"set spec[#new]/user '${user}'",
-					"set spec[#new]/host_group/host '${host}'",
+					"set spec[#new]/host_group/host '${host_}'",
 					"set spec[#new]/host_group/command '${command}'",
 					"set spec[#new]/host_group/command/runas_user '${runas}'",
 				]
+
+				# TEMPORARY -- migrate host=$::hostname to host=ALL
+				if $host_ == "ALL" {
+					$fixup_changes = [ "rm spec[user='${user}'][host_group[host='${::hostname}'][command[.='${command}'][runas_user='${runas}']]]" ]
+				} else {
+					$fixup_changes = []
+				}
 
 				case $passwd {
 					true: {
@@ -81,20 +99,16 @@ define sudo::entry($ensure   = present,
 					"rm spec[#new]/#new",
 				]
 
-				$changes = concat($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
-				$filter  = concat($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
+				$changes = concat($base_changes, $init_changes, $fixup_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
+				$filter  = concat($base_filter,                                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
 
 				augeas { "sudo/entry/${name}":
-					incl    => "/etc/sudoers",
-					lens    => "Sudoers.lns",
 					changes => $changes,
 					onlyif  => "match spec${filter} size == 0";
 				}
 			}
 			absent: {
 				augeas { "sudo/entry/${name}":
-					incl    => "/etc/sudoers",
-					lens    => "Sudoers.lns",
 					changes => $base_changes,
 					onlyif  => "match spec${base_filter} size > 0",
 				}
