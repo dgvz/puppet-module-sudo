@@ -30,13 +30,6 @@ define sudo::entry($ensure   = present,
 					"set spec[#new]/host_group/command/runas_user '${runas}'",
 				]
 
-				# TEMPORARY -- migrate host=$::hostname to host=ALL
-				if $host == "ALL" {
-					$fixup_changes = [ "rm spec[user='${user}'][host_group[host='${::hostname}'][command[.='${command}'][runas_user='${runas}']]]" ]
-				} else {
-					$fixup_changes = []
-				}
-
 				case $passwd {
 					true: {
 						$passwd_changes = [ "set spec[#new]/host_group/command/tag[last()+1] 'PASSWD'" ]
