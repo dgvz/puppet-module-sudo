@@ -1,5 +1,5 @@
 class sudo::packages {
-	noop { "sudo/installed": }
+	sudo::noop { "sudo/installed": }
 	Package { before => Noop["sudo/installed"] }
 
 	package { "sudo": }
