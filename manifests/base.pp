@@ -1,7 +1,7 @@
 class sudo::base {
 	include sudo::packages
 
-	Augeas { require => Sudo::Noop["sudo/installed"] }
+	Augeas { require => Noop["sudo/installed"] }
 
 	# NRPE checks don't have a tty
 	augeas { "sudo/requiretty":

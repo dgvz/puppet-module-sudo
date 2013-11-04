@@ -11,7 +11,7 @@ define sudo::entry($ensure   = present,
 	Augeas {
 		incl    => "/etc/sudoers",
 		lens    => "Sudoers.lns",
-		require => Sudo::Noop["sudo/installed"],
+		require => Noop["sudo/installed"],
 	}
 
 	if $user == "root" {
