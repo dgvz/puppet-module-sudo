@@ -85,8 +85,8 @@ define sudo::entry($ensure   = present,
 					"rm spec[#new]/#new",
 				]
 
-				$changes = concat($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
-				$filter  = concat($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
+				$changes = womble_concat($base_changes, $init_changes, $passwd_changes, $exec_changes, $setenv_changes, $fini_changes)
+				$filter  = womble_concat($base_filter,                 $passwd_filter,  $exec_filter,  $setenv_filter,  $fini_filter)
 
 				augeas { "sudo/entry/${name}":
 					changes => $changes,
